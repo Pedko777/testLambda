@@ -8,31 +8,42 @@
 //*> abcd
 //*[‘abcd’, ‘a.bcd’, ‘ab.cd’, ‘a.b.cd’ … ]
 
-//==================================================================
+//================================================= Вариант 1
 
-const fnPermutePunc = (str) => {
-  return new Array(2 ** ((str.length || 1) - 1)) //* создаём массив длинна = количеству вараинтов
-    .fill(0) //*заполняем все элементы 0
-    .map((
-      //*первый цыкл перебирает варианты
-      _,
-      i //* перебираем массив
-    ) =>
-      [...i.toString(2).padStart(str.length - 1, "0")].reduce(
-        //* второй цыкл перемешивает буквы и точки
-        //* перезаполняем массив, вместо 0 в двоичную систему
-        (variant, el, i) => variant + (el == 0 ? "" : ".") + (str[i + 1] || ""), //* проходимся по масиву и вместо еденичек ставим точки
-        str[0] || ""
-      )
-    );
+const fnPermutePunc1 = (str, i, n) => {
+  String.prototype.splice = function (idx, rem, str) {
+    return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
+  };
+  if (i == n) {
+    return;
+  }
+  let buff = str;
+  let j = str.length - n + i;
+  buff = str.splice(j, 0, ".");
+  console.log(buff);
+  fnPermutePunc1(str, i + 1, n);
+  fnPermutePunc1(buff, i + 1, n);
 };
 
-console.log(fnPermutePunc("abc"));
+const str = "ABCD";
+fnPermutePunc1(str, 1, str.length);
 
-//==================================================================
+//================================================== Вариант 2
+const fnPermutePunc2 = (str) => {
+  let result = "";
+  const strArray = str.split("");
+  const length = strArray.length;
+  const resultSize = 2 ** ((str.length || 1) - 1);
+  for (let i = 0; i < resultSize; i++) {
+    for (let j = 0; j < length; j++) {
+      result += strArray[j];
+      if ((i & (1 << j)) > 0) {
+        result += ".";
+      }
+    }
+    result += "\n";
+  }
+  return result;
+};
 
-// const fnPermutePunc2 = (str) => {
-//   return new Array();
-// };
-
-// console.log(fnPermutePunc2("abc"));
+console.log(fnPermutePunc2("abcd"));
